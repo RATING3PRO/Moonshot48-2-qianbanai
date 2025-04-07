@@ -1,0 +1,216 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "admin123",
+    "email": "admin@example.com",
+    "phone": "13800138000",
+    "role": "admin",
+    "status": "active",
+    "created_at": "2025-04-04T14:06:49.916Z",
+    "last_login": null,
+    "traffic_limit": 10737418240,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "8kohmbefp1z7oviuqojxyhxf",
+    "profile": {
+      "display_name": "管理员",
+      "avatar": "",
+      "phone": "13800138000"
+    }
+  },
+  {
+    "id": 2,
+    "username": "李大爷",
+    "password": "password123",
+    "email": "li@example.com",
+    "phone": "13912345678",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:06:49.916Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "pj9a37z27f5chxjknheym6r3",
+    "profile": {
+      "display_name": "李大爷",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "13912345678"
+    }
+  },
+  {
+    "id": 3,
+    "username": "王奶奶",
+    "password": "password123",
+    "email": "wang@example.com",
+    "phone": "13687654321",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:06:49.916Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "zofieq4isu4ms746lumscahr",
+    "profile": {
+      "display_name": "王奶奶",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "13687654321"
+    }
+  },
+  {
+    "id": 4,
+    "username": "张医生",
+    "password": "password123",
+    "email": "zhang@example.com",
+    "phone": "13822221111",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:06:49.916Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "os84lotc179h3aghsn1ztpg8",
+    "profile": {
+      "display_name": "张医生",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "13822221111"
+    }
+  },
+  {
+    "id": 5,
+    "username": "刘姨",
+    "password": "password123",
+    "email": "liu@example.com",
+    "phone": "13611112222",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:06:49.916Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "0rv9w5mbxtnpottds9xuhc86",
+    "profile": {
+      "display_name": "刘姨",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "13611112222"
+    }
+  },
+  {
+    "id": 6,
+    "username": "CWSD",
+    "password": "123456",
+    "email": "",
+    "phone": "13522410866",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:32:00.025Z",
+    "last_login": "2025-04-05T06:06:51.727Z",
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "8uu3m4b2o6p57i4du576b2o1",
+    "profile": {
+      "display_name": "CWSD",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "13522410866",
+      "bio": "我是一位热爱娱乐的人。特别喜欢听音乐。希望能在这里认识更多志同道合的朋友！"
+    },
+    "interests": [
+      {
+        "category": "烹饪",
+        "name": "做饭",
+        "level": 3
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "username": "你妈妈",
+    "password": "123",
+    "email": "gcg6eic1y9@iwatermail.com",
+    "phone": "13522410867",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T14:37:13.134Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "qymzqbrgdjhrckp84h689xxc",
+    "profile": {
+      "display_name": "你妈妈",
+      "avatar": "",
+      "phone": "13522410867"
+    }
+  },
+  {
+    "id": 8,
+    "username": "BB",
+    "password": "123",
+    "email": "waang@example.com",
+    "phone": "13687654324",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T15:01:05.946Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "4f1uqpaboi3nzupkujfpy59w",
+    "profile": {
+      "display_name": "wdddd",
+      "avatar": "",
+      "phone": "13687654324"
+    }
+  },
+  {
+    "id": 9,
+    "username": "你姥爷",
+    "password": "123456",
+    "email": "",
+    "phone": "15601319430",
+    "role": "user",
+    "status": "active",
+    "created_at": "2025-04-04T17:29:15.525Z",
+    "last_login": null,
+    "traffic_limit": 5368709120,
+    "traffic_used": 0,
+    "servers_access": [
+      1
+    ],
+    "subscription_url": "acszt2m5mpfwh3otw5xytx8k",
+    "profile": {
+      "display_name": "你姥爷",
+      "avatar": "https://via.placeholder.com/40",
+      "phone": "15601319430",
+      "bio": "我是一位热爱娱乐的人。特别喜欢看电影。希望能在这里认识更多志同道合的朋友！"
+    },
+    "interests": [
+      {
+        "category": "娱乐",
+        "name": "看电影",
+        "level": 2
+      }
+    ]
+  }
+]

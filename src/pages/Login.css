@@ -1,0 +1,116 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.app-logo {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  background: #fff;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.text-logo {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1677ff;
+}
+
+.app-logo img {
+  width: 80px;
+  height: 80px;
+}
+
+.login-header h1 {
+  font-size: 32px;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.login-header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-list {
+  --border-inner: none !important;
+  --border-top: none !important;
+  --border-bottom: none !important;
+  background: transparent !important;
+}
+
+.form-list :global(.adm-list-item) {
+  background: #f5f7fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+}
+
+.form-list :global(.adm-list-item-content) {
+  padding: 0;
+}
+
+.form-list :global(.adm-input-wrapper) {
+  --font-size: 16px;
+}
+
+.form-list :global(.adm-form-item) {
+  margin-bottom: 0;
+}
+
+.form-list :global(.adm-list-item-prefix) {
+  color: #999;
+  font-size: 20px;
+  padding-right: 12px;
+}
+
+.login-button {
+  height: 48px;
+  font-size: 18px;
+  border-radius: 24px;
+  margin-top: 24px;
+}
+
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.login-footer p {
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.register-link {
+  color: #1677ff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+} 

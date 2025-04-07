@@ -1,0 +1,16 @@
+var A=Object.defineProperty;var S=(g,t,s)=>t in g?A(g,t,{enumerable:!0,configurable:!0,writable:!0,value:s}):g[t]=s;var M=(g,t,s)=>(S(g,typeof t!="symbol"?t+"":t,s),s);var m=(g,t,s)=>new Promise((n,e)=>{var r=a=>{try{o(s.next(a))}catch(c){e(c)}},i=a=>{try{o(s.throw(a))}catch(c){e(c)}},o=a=>a.done?n(a.value):Promise.resolve(a.value).then(r,i);o((s=s.apply(g,t)).next())});import{W as f}from"./index-5a8bf324.js";class I{static getSelectedModel(){return this._selectedModel}static setSelectedModel(t){this._selectedModel=t,localStorage.setItem("hf_selected_model",t)}static getAvailableModels(){return[{id:f.MODELS.TINY_LLAMA,name:"TinyLlama-1.1B (小型英文模型)"},{id:f.MODELS.GEMMA_2B,name:"Gemma-2B (谷歌小型模型)"},{id:f.MODELS.BLOOMZ_560M,name:"BLOOMZ-560M (超小型多语言)"},{id:f.MODELS.CHAT_GLM,name:"ChatGLM3-6B (中文为主)"},{id:f.MODELS.MISTRAL,name:"Mistral-7B (高性能英文)"}]}static sendMessage(r){return m(this,arguments,function*(t,s=[],n,e=""){try{const i=n||this._selectedModel;let o=`你是一个友好、温暖的AI助手，名叫"牵伴"。你的目标是成为老年人的贴心伙伴，
+提供情感支持、日常对话和实用信息。请用简单、直接、温暖的语言回应，避免过于复杂或技术性的表达。
+回答应该简洁明了，避免过长的段落。使用礼貌、尊重的语气，偶尔可以使用一些适合老年人的幽默。
+`;e&&(o+=e);let a;i===f.MODELS.CHAT_GLM?a={inputs:this.formatHistoryForChatGLM(s,t,o)}:i.includes("mistral")?a={inputs:this.formatHistoryForMistral(s,t,o)}:a={inputs:this.formatGenericHistory(s,t,o)},console.log(`使用Hugging Face模型 ${i} 生成回复...`,a);const c=yield fetch(`${f.BASE_URL}/${i}`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${f.TOKEN}`},body:JSON.stringify(a),signal:AbortSignal.timeout(6e4)});if(!c.ok){const u=yield c.text();throw console.error("Hugging Face API响应错误:",c.status,u),new Error(`API错误 (${c.status}): ${c.statusText}`)}const l=yield c.json();console.log("Hugging Face API响应:",l);let d="";return Array.isArray(l)&&l.length>0?l[0].generated_text?d=l[0].generated_text:d=JSON.stringify(l[0]):l.generated_text?d=l.generated_text:typeof l=="string"?d=l:d=JSON.stringify(l),this.cleanResponse(d,t)}catch(i){return console.error("调用Hugging Face API失败:",i),`与Hugging Face API通信失败: ${i instanceof Error?i.message:String(i)}。请检查网络连接和API密钥。`}})}static cleanResponse(t,s){t.startsWith(s)&&(t=t.substring(s.length).trim());const n=["Assistant:","AI:","Response:","助手:","AI助手:","回答:"];for(const e of n)if(t.startsWith(e)){t=t.substring(e.length).trim();break}return t}static formatHistoryForChatGLM(t,s,n=""){let e="";n&&(e+=`[System]: ${n}
+`);for(const r of t)r.role==="user"?e+=`[Human]: ${r.content}
+`:r.role==="assistant"?e+=`[AI]: ${r.content}
+`:r.role==="system"&&(e+=`[System]: ${r.content}
+`);return e+=`[Human]: ${s}
+[AI]:`,e}static formatHistoryForMistral(t,s,n=""){let e="";n&&(e+=`<s>[INST] ${n} [/INST]</s>
+`);for(let r=0;r<t.length;r+=2){const i=t[r],o=r+1<t.length?t[r+1]:null;i&&i.role==="user"&&(e+=`<s>[INST] ${i.content} [/INST] `),o&&o.role==="assistant"&&(e+=`${o.content}</s>
+`)}return e+=`<s>[INST] ${s} [/INST]`,e}static formatGenericHistory(t,s,n=""){let e="";n&&(e+=`System: ${n}
+`);for(const r of t)r.role==="user"?e+=`User: ${r.content}
+`:r.role==="assistant"?e+=`Assistant: ${r.content}
+`:r.role==="system"&&(e+=`System: ${r.content}
+`);return e+=`User: ${s}
+Assistant:`,e}}M(I,"_selectedModel",localStorage.getItem("hf_selected_model")||f.MODELS.DEFAULT);export{I as H};

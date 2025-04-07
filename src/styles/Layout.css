@@ -1,0 +1,94 @@
+/* 布局容器 */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  padding-bottom: 90px; /* 为底部导航栏留出空间 */
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* 顶部字体大小控制工具 */
+.top-right-tools {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 字体大小按钮 */
+.font-size-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+/* 字体大小工具 */
+.font-size-tools {
+  padding: 16px;
+  min-width: 200px;
+}
+
+/* 字体大小标题 */
+.font-size-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* 字体大小控制区 */
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* 字体大小当前值 */
+.font-size-value {
+  font-size: 18px;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+}
+
+/* 底部导航栏 */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 8px 0;
+  height: 80px; /* 增大高度适合大字体 */
+}
+
+/* 底部导航项 */
+.adm-tab-bar-item {
+  padding: 8px 0;
+  font-size: 16px; /* 增大基础字体大小 */
+}
+
+/* 底部导航图标 */
+.adm-tab-bar-item-icon {
+  font-size: 28px; /* 增大图标大小 */
+  margin-bottom: 4px;
+} 

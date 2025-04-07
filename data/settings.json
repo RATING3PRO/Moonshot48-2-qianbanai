@@ -1,0 +1,9 @@
+{
+  "app.name": "AI牵伴管理系统",
+  "app.description": "老年人社交应用管理平台",
+  "app.version": "1.0.0",
+  "mail.enabled": "true",
+  "mail.service": "smtp.example.com",
+  "notification.enabled": "true",
+  "storage.provider": "local"
+}

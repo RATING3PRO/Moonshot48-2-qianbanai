@@ -1,0 +1,548 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Button, Input, Avatar, Space, Toast, SpinLoading, Selector, ImageUploader } from 'antd-mobile';
+import { PictureOutline } from 'antd-mobile-icons';
+import { WeatherService } from '../services/weatherService';
+import { OllamaService } from '../services/ollamaService';
+import { OLLAMA_API } from '../config/api';
+
+// Web Speech API类型声明
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
+  }
+}
+
+// SpeechRecognition类型
+type SpeechRecognition = any;
+
+// 图标组件
+const SendIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>;
+const MicIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>;
+const StopIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>;
+
+// 消息类型定义
+interface Message {
+  id: number;
+  text: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+  imageUrl?: string; // 添加图片URL字段
+}
+
+// 聊天消息接口，用于构建Ollama的消息历史
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+// 语音识别事件接口
+interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      }
+    }
+  };
+  error: {
+    error: string;
+  };
+}
+
+const AIChat: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      text: '您好！我是您的本地AI助手，有什么我可以帮您的吗？',
+      sender: 'ai',
+      timestamp: new Date()
+    }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isAIResponding, setIsAIResponding] = useState(false);
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState(OLLAMA_API.MODEL);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
+    { role: 'system', content: '你是一个专为老年人设计的AI助手。请遵循以下规则：1. 使用简单、清晰、尊重的语言；2. 避免使用技术术语，如需使用，请简明解释；3. 回答要简短、直接，重点突出；4. 提供实用的健康和生活建议；5. 保持耐心和友好，语气温和。' }
+  ]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // 自动滚动到最新消息
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  // 加载可用模型
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        const models = await OllamaService.getModels();
+        if (models.length > 0) {
+          setAvailableModels(models);
+        }
+      } catch (error) {
+        console.error('加载模型列表失败:', error);
+      }
+    };
+    
+    loadModels();
+  }, []);
+  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // 发送消息
+  const sendMessage = () => {
+    if (!inputText.trim() && !isRecording) return;
+    
+    // 添加用户消息
+    const userMessage: Message = {
+      id: messages.length + 1,
+      text: inputText.trim(),
+      sender: 'user',
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    
+    // 添加用户消息到聊天历史
+    const userChatMessage: ChatMessage = {
+      role: 'user',
+      content: userMessage.text
+    };
+    const updatedHistory = [...chatHistory, userChatMessage];
+    setChatHistory(updatedHistory);
+    
+    // 调用AI生成响应
+    handleAIResponse(userMessage.text, updatedHistory);
+  };
+  
+  // 处理AI响应
+  const handleAIResponse = async (userText: string, history: ChatMessage[]) => {
+    setIsAIResponding(true);
+    
+    try {
+      // 检查是否是天气查询
+      if (userText.includes('天气')) {
+        try {
+          // 提取城市名称，默认为北京
+          let cityName = '北京';
+          const cityMatch = userText.match(/([\u4e00-\u9fa5]{2,}市?|[\u4e00-\u9fa5]{2,}县)的?天气/);
+          if (cityMatch && cityMatch[1]) {
+            cityName = cityMatch[1].replace(/市$|县$/, '');
+          }
+          
+          // 调用天气服务获取天气信息
+          const weatherInfo = await WeatherService.getWeatherInfo(cityName);
+          const weatherResponse = WeatherService.generateWeatherReply(weatherInfo, cityName);
+          
+          addAIResponse(weatherResponse, history);
+        } catch (error) {
+          console.error('获取天气信息失败:', error);
+          const response = await OllamaService.sendMessage(userText, history.slice(0, -1), selectedModel);
+          addAIResponse(response, history);
+        }
+      } else {
+        // 使用Ollama API处理一般查询
+        const response = await OllamaService.sendMessage(userText, history.slice(0, -1), selectedModel);
+        addAIResponse(response, history);
+      }
+    } catch (error) {
+      console.error('生成AI回复失败:', error);
+      
+      // 处理错误情况
+      const errorMessage = '抱歉，与本地AI服务通信时出现了问题，请确保Ollama服务正在运行。';
+      addAIResponse(errorMessage, history);
+    }
+  };
+  
+  // 添加AI响应到消息列表和聊天历史
+  const addAIResponse = (responseText: string, history: ChatMessage[]) => {
+    // 添加AI回复到消息列表
+    const aiMessage: Message = {
+      id: messages.length + 2,
+      text: responseText,
+      sender: 'ai',
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, aiMessage]);
+    
+    // 添加AI回复到聊天历史
+    const aiChatMessage: ChatMessage = {
+      role: 'assistant',
+      content: responseText
+    };
+    setChatHistory([...history, aiChatMessage]);
+    
+    setIsAIResponding(false);
+    
+    // 语音播报AI回复
+    speakText(responseText);
+  };
+  
+  // 语音识别实例
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  
+  // 初始化语音识别
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+      const recognitionInstance = new SpeechRecognition();
+      
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = 'zh-CN';
+      
+      recognitionInstance.onstart = () => {
+        setIsRecording(true);
+        Toast.show({
+          content: '请开始说话...',
+          duration: 1000,
+        });
+      };
+      
+      recognitionInstance.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInputText(transcript);
+        
+        // 自动发送识别的文本
+        const userMessage: Message = {
+          id: messages.length + 1,
+          text: transcript,
+          sender: 'user',
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, userMessage]);
+        
+        // 添加用户消息到聊天历史
+        const userChatMessage: ChatMessage = {
+          role: 'user',
+          content: transcript
+        };
+        const updatedHistory = [...chatHistory, userChatMessage];
+        setChatHistory(updatedHistory);
+        
+        // 处理AI响应
+        handleAIResponse(transcript, updatedHistory);
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('语音识别错误:', event.error);
+        Toast.show({
+          content: '语音识别出错，请重试',
+          duration: 2000,
+        });
+        setIsRecording(false);
+      };
+      
+      recognitionInstance.onend = () => {
+        setIsRecording(false);
+      };
+      
+      setRecognition(recognitionInstance);
+    } else {
+      Toast.show({
+        content: '您的浏览器不支持语音识别',
+        duration: 2000,
+      });
+    }
+  }, []);
+  
+  // 开始语音输入
+  const startVoiceInput = () => {
+    if (recognition) {
+      recognition.start();
+    } else {
+      Toast.show({
+        content: '语音识别功能未初始化',
+        duration: 2000,
+      });
+    }
+  };
+  
+  // 停止语音输入
+  const stopVoiceInput = () => {
+    if (recognition) {
+      recognition.stop();
+      Toast.show({
+        content: '语音输入已停止',
+        duration: 1000,
+      });
+    }
+  };
+  
+  // 语音播报文本
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const speech = new SpeechSynthesisUtterance();
+      speech.text = text;
+      speech.lang = 'zh-CN';
+      speech.rate = 0.9; // 语速稍慢，适合老年人
+      speech.pitch = 1;
+      speech.volume = 1;
+      window.speechSynthesis.speak(speech);
+    } else {
+      console.log('您的浏览器不支持语音合成');
+    }
+  };
+  
+  // 切换模型
+  const handleModelChange = (value: string) => {
+    if (value === selectedModel) return;
+    
+    // 设置新的模型
+    setSelectedModel(value);
+    
+    // 更新系统消息
+    setChatHistory([
+      { role: 'system', content: '你是一个专为老年人设计的AI助手。请遵循以下规则：1. 使用简单、清晰、尊重的语言；2. 避免使用技术术语，如需使用，请简明解释；3. 回答要简短、直接，重点突出；4. 提供实用的健康和生活建议；5. 保持耐心和友好，语气温和。' }
+    ]);
+    
+    // 添加提示消息
+    const systemMessage: Message = {
+      id: messages.length + 1,
+      text: `已切换到 ${value} 模型。这个模型更强大，可以更好地理解您的问题并提供帮助。`,
+      sender: 'ai',
+      timestamp: new Date()
+    };
+    setMessages([...messages, systemMessage]);
+    
+    Toast.show({
+      content: `已切换到 ${value} 模型`,
+      duration: 1500,
+    });
+  };
+  
+  // 格式化时间
+  const formatTime = (date: Date) => {
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="ai-chat-container">
+      <h1 className="page-title">本地AI助手</h1>
+      
+      {/* 模型选择器 */}
+      {availableModels.length > 0 && (
+        <div className="model-selector">
+          <Selector
+            value={[selectedModel]}
+            onChange={value => handleModelChange(value[0])}
+            options={availableModels.map(model => ({ label: model, value: model }))}
+            showCheckMark={false}
+          />
+        </div>
+      )}
+      
+      {/* 消息列表 */}
+      <div className="messages-container">
+        {messages.map(message => (
+          <div 
+            key={message.id} 
+            className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}
+          >
+            {message.sender === 'ai' && (
+              <div className="message-avatar ai-avatar">AI</div>
+            )}
+            <div className="message-content">
+              <div className="message-text">{message.text}</div>
+              <div className="message-time">{formatTime(message.timestamp)}</div>
+            </div>
+            {message.sender === 'user' && (
+              <div className="message-avatar user-avatar">我</div>
+            )}
+          </div>
+        ))}
+        {isAIResponding && (
+          <div className="message ai-message">
+            <div className="message-avatar ai-avatar">AI</div>
+            <div className="message-content">
+              <div className="message-text typing">正在思考...</div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+      
+      {/* 输入区域 */}
+      <div className="input-container">
+        <div className="input-wrapper">
+          <Input
+            className="message-input"
+            placeholder="请输入消息或点击麦克风语音输入"
+            value={inputText}
+            onChange={setInputText}
+            onEnterPress={sendMessage}
+          />
+          {isRecording ? (
+            <Button
+              className="voice-btn recording"
+              onClick={stopVoiceInput}
+            >
+              <StopIcon />
+            </Button>
+          ) : (
+            <Button
+              className="voice-btn"
+              onClick={startVoiceInput}
+            >
+              <MicIcon />
+            </Button>
+          )}
+          <Button
+            className="send-btn"
+            color="primary"
+            onClick={sendMessage}
+            disabled={isAIResponding}
+          >
+            <SendIcon />
+          </Button>
+        </div>
+      </div>
+      
+      <style jsx>{`
+        .ai-chat-container {
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          padding: var(--spacing-md);
+        }
+        
+        .model-selector {
+          margin-bottom: var(--spacing-md);
+        }
+        
+        .messages-container {
+          flex: 1;
+          overflow-y: auto;
+          margin-bottom: var(--spacing-md);
+          padding-bottom: 80px;
+        }
+        
+        .message {
+          display: flex;
+          margin-bottom: var(--spacing-md);
+          align-items: flex-start;
+        }
+        
+        .user-message {
+          flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          color: white;
+          flex-shrink: 0;
+          margin: 0 var(--spacing-sm);
+        }
+        
+        .ai-avatar {
+          background-color: #4080ff;
+        }
+        
+        .user-avatar {
+          background-color: var(--primary-color);
+        }
+        
+        .message-content {
+          max-width: 80%;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .message-text {
+          padding: var(--spacing-sm) var(--spacing-md);
+          border-radius: 12px;
+          position: relative;
+          word-break: break-word;
+        }
+        
+        .ai-message .message-text {
+          background-color: #f5f5f5;
+          color: var(--text-color);
+          border-top-left-radius: 2px;
+        }
+        
+        .user-message .message-text {
+          background-color: var(--primary-color);
+          color: white;
+          border-top-right-radius: 2px;
+        }
+        
+        .message-time {
+          font-size: 12px;
+          color: #999;
+          margin-top: 4px;
+          align-self: flex-end;
+        }
+        
+        .typing::after {
+          content: '';
+          animation: dots 1.5s infinite;
+          display: inline-block;
+          width: 20px;
+          text-align: left;
+        }
+        
+        @keyframes dots {
+          0%, 20% { content: '.'; }
+          40% { content: '..'; }
+          60%, 100% { content: '...'; }
+        }
+        
+        .input-container {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: var(--spacing-md);
+          background-color: white;
+          border-top: 1px solid #eee;
+        }
+        
+        .input-wrapper {
+          display: flex;
+          align-items: center;
+        }
+        
+        .message-input {
+          flex: 1;
+          background-color: #f5f5f5;
+          border-radius: 20px;
+          padding: 10px 15px;
+          margin-right: var(--spacing-sm);
+          font-size: var(--font-size-base);
+        }
+        
+        .voice-btn, .send-btn {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          margin-left: var(--spacing-xs);
+        }
+        
+        .recording {
+          background-color: #ff4d4f;
+          color: white;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default AIChat;

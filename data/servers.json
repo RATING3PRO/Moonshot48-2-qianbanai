@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "misakablog",
+    "protocol": "vmess",
+    "port": 28714,
+    "status": true,
+    "traffic": {
+      "upload": 0,
+      "download": 0
+    },
+    "note": ""
+  }
+]

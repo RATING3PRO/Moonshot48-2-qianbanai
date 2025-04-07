@@ -1,0 +1,103 @@
+.social-container {
+  padding: 16px;
+  padding-bottom: 70px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.action-bar {
+  padding: 12px 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+:global(.adm-list) {
+  --border-inner: none;
+  --border-top: none;
+  --border-bottom: none;
+}
+
+:global(.adm-list-item) {
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+:global(.adm-list-item-content) {
+  padding: 12px;
+}
+
+:global(.adm-avatar) {
+  --size: 40px;
+  border: 1px solid #eee;
+}
+
+:global(.adm-badge) {
+  --dot-size: 8px;
+}
+
+:global(.adm-tabs-tab) {
+  font-size: 16px;
+}
+
+:global(.adm-tabs-tab-active) {
+  color: #1677ff;
+}
+
+:global(.adm-button) {
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.friend-tags, .group-tags {
+  margin-top: 8px;
+}
+
+.group-detail {
+  padding: 16px 0;
+}
+
+.group-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.group-stats {
+  flex: 1;
+}
+
+.group-stats > div {
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.group-notice {
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+}
+
+.group-notice h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.group-notice p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+:global(.adm-dialog) {
+  --border-radius: 16px;
+}
+
+:global(.adm-dialog-body) {
+  padding: 24px;
+}
+
+:global(.adm-dialog-footer) {
+  padding: 8px 16px 16px;
+} 

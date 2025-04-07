@@ -1,0 +1,78 @@
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+}
+
+.home-content {
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 70px;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.text-logo {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1677ff;
+  margin-bottom: 16px;
+}
+
+.welcome-section h1 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.welcome-desc {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.feature-card {
+  padding: 16px;
+  height: 100%;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.feature-card:active {
+  transform: scale(0.98);
+}
+
+.feature-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.feature-title {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  text-align: center;
+}
+
+.home-tabbar {
+  height: 50px;
+  border-top: 1px solid #eee;
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+} 

@@ -1,0 +1,12 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="90" fill="#4F7DFE" />
+  
+  <!-- 对话气泡图标 -->
+  <path d="M150 70h-20v60H70v20c0 5.5 4.5 10 10 10h50l30 30V80c0-5.5-4.5-10-10-10z" fill="white" />
+  <path d="M120 50V30c0-5.5-4.5-10-10-10H40c-5.5 0-10 4.5-10 10v90l30-30h50c5.5 0 10-4.5 10-10V50z" fill="white" />
+  
+  <!-- 人物图标 -->
+  <circle cx="75" cy="65" r="15" fill="#4F7DFE" />
+  <path d="M55 100c0-15 20-25 40-25s40 10 40 25" stroke="#4F7DFE" stroke-width="8" fill="none" />
+</svg>

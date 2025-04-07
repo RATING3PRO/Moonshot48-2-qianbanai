@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许任何明文流量，生产环境应该设置具体限制 -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- 信任系统预安装的CA证书 -->
+            <certificates src="system" />
+            <!-- 信任用户安装的CA证书，用于开发和测试 -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- 配置特定域名的安全策略 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- 允许应用访问API服务器 -->
+        <domain includeSubdomains="true">aidemo-api.glitch.me</domain>
+        <domain includeSubdomains="true">api.aiqianban.com</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <!-- 添加本地局域网IP地址，确保可以访问局域网中的服务器 -->
+        <domain includeSubdomains="true">192.168.0.196</domain>
+        
+        <!-- 信任这些域名的证书 -->
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config> 

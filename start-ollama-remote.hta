@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI牵伴 - 远程Ollama启动工具</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="x-ua-compatible" content="IE=edge" />
+<hta:application
+  id="ollamaRemoteStarter"
+  applicationname="AI牵伴远程启动工具"
+  border="thin"
+  borderstyle="normal"
+  caption="yes"
+  icon=""
+  maximizebutton="yes"
+  minimizebutton="yes"
+  showintaskbar="yes"
+  singleinstance="yes"
+  sysmenu="yes"
+  version="1.0"
+  windowstate="normal"
+/>
+<style>
+  body {
+    font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    margin: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  h1 {
+    color: #2c7be5;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  h2 {
+    color: #2a6496;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-top: 5px;
+  }
+  button {
+    background-color: #2c7be5;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  button.big-button {
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #36b37e;
+  }
+  button:hover {
+    opacity: 0.9;
+  }
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  .warning {
+    color: #c0392b;
+    font-weight: bold;
+  }
+  .success {
+    color: #27ae60;
+    font-weight: bold;
+  }
+  .info {
+    color: #2980b9;
+  }
+  .log {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f8f8f8;
+    font-family: Consolas, "Microsoft YaHei", monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    margin-top: 10px;
+  }
+  .url-display {
+    font-family: Consolas, monospace;
+    padding: 10px;
+    background-color: #e8f4fc;
+    border: 1px dashed #2c7be5;
+    border-radius: 4px;
+    margin: 10px 0;
+    word-break: break-all;
+  }
+  .instructions {
+    margin-top: 20px;
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 10px 15px;
+  }
+  .instructions li {
+    margin-bottom: 8px;
+  }
+  .status-box {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  .status-not-installed {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+  .status-installed {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI牵伴 - 远程Ollama启动工具</h1>
+    
+    <div class="section">
+      <h2>一键启动</h2>
+      <button id="startAll" class="big-button">一键启动所有服务</button>
+      
+      <div id="ollamaStatus" class="status-box status-not-installed">Ollama状态: 未检测</div>
+      <div id="ngrokStatus" class="status-box status-not-installed">Ngrok状态: 未检测</div>
+    </div>
+    
+    <div class="section">
+      <h2>Ngrok连接URL</h2>
+      <p>成功后，这里将显示您的ngrok URL:</p>
+      <div class="url-display" id="ngrokUrl">等待ngrok启动...</div>
+      <button id="copyUrl">复制URL</button>
+      <button id="testUrl">测试连接</button>
+    </div>
+    
+    <div class="section">
+      <h2>服务日志</h2>
+      <div class="log" id="serviceLog">等待操作...</div>
+    </div>
+    
+    <div class="instructions">
+      <h3>使用指南</h3>
+      <ol>
+        <li>点击"一键启动所有服务"自动检测和启动所需的服务</li>
+        <li>等待ngrok URL显示，然后点击"复制URL"按钮</li>
+        <li>打开AI牵伴应用的远程AI聊天页面</li>
+        <li>在设置中粘贴URL并连接</li>
+      </ol>
+      <p class="warning">注意：免费版ngrok链接有效期约为2小时，请勿将URL分享给不信任的人员。</p>
+    </div>
+  </div>
+
+<script>
+var shell = new ActiveXObject("WScript.Shell");
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+var ollamaRunning = false;
+var ngrokRunning = false;
+var ollamaInstalled = false;
+var ngrokInstalled = false;
+
+// 检测Ollama是否已安装
+function checkOllama() {
+  try {
+    log("正在检测Ollama...");
+    var result = shell.Exec("where ollama");
+    var output = result.StdOut.ReadAll();
+    
+    if (output.indexOf("ollama") !== -1) {
+      ollamaInstalled = true;
+      document.getElementById("ollamaStatus").innerHTML = "Ollama状态: ✓ 已安装";
+      document.getElementById("ollamaStatus").className = "status-box status-installed";
+      log("✓ Ollama已安装");
+      return true;
+    } else {
+      document.getElementById("ollamaStatus").innerHTML = "Ollama状态: ✗ 未安装 - <a href='https://ollama.com/download' target='_blank'>点击下载</a>";
+      log("✗ Ollama未安装。请访问 https://ollama.com/download 下载安装");
+      return false;
+    }
+  } catch (e) {
+    document.getElementById("ollamaStatus").innerHTML = "Ollama状态: ✗ 检测失败";
+    log("✗ 检测Ollama失败: " + e.message);
+    return false;
+  }
+}
+
+// 检测Ngrok是否已安装
+function checkNgrok() {
+  try {
+    log("正在检测Ngrok...");
+    var result = shell.Exec("where ngrok");
+    var output = result.StdOut.ReadAll();
+    
+    if (output.indexOf("ngrok") !== -1) {
+      ngrokInstalled = true;
+      document.getElementById("ngrokStatus").innerHTML = "Ngrok状态: ✓ 已安装";
+      document.getElementById("ngrokStatus").className = "status-box status-installed";
+      log("✓ Ngrok已安装");
+      return true;
+    } else {
+      document.getElementById("ngrokStatus").innerHTML = "Ngrok状态: ✗ 未安装 - <a href='https://ngrok.com/download' target='_blank'>点击下载</a>";
+      log("✗ Ngrok未安装。请访问 https://ngrok.com/download 下载安装");
+      return false;
+    }
+  } catch (e) {
+    document.getElementById("ngrokStatus").innerHTML = "Ngrok状态: ✗ 检测失败";
+    log("✗ 检测Ngrok失败: " + e.message);
+    return false;
+  }
+}
+
+// 添加日志
+function log(message) {
+  var logElement = document.getElementById("serviceLog");
+  var timestamp = new Date().toLocaleTimeString();
+  logElement.innerHTML += "[" + timestamp + "] " + message + "\n";
+  logElement.scrollTop = logElement.scrollHeight;
+}
+
+// 启动Ollama服务
+function startOllama() {
+  if (ollamaRunning) {
+    log("Ollama服务已在运行...");
+    return true;
+  }
+  
+  if (!ollamaInstalled) {
+    if (!checkOllama()) {
+      log("请先安装Ollama");
+      return false;
+    }
+  }
+  
+  try {
+    log("正在启动Ollama服务...");
+    shell.Run("ollama serve", 0, false);
+    ollamaRunning = true;
+    
+    // 等待服务启动
+    log("等待Ollama服务启动...");
+    var startTime = new Date().getTime();
+    var maxWaitTime = 30000; // 30秒超时
+    
+    var checkOllamaInterval = setInterval(function() {
+      try {
+        var testResult = shell.Exec("curl -s http://localhost:11434/api/tags");
+        var testOutput = testResult.StdOut.ReadAll();
+        
+        if (testOutput && testOutput.length > 0) {
+          clearInterval(checkOllamaInterval);
+          log("✓ Ollama服务已成功启动");
+          
+          // 检查是否有gemma3:12b模型
+          checkGemmaModel();
+          return true;
+        }
+        
+        // 检查是否超时
+        if (new Date().getTime() - startTime > maxWaitTime) {
+          clearInterval(checkOllamaInterval);
+          log("✗ Ollama服务启动超时");
+          return false;
+        }
+      } catch (e) {
+        // 继续等待
+      }
+    }, 1000);
+    
+    return true;
+  } catch (e) {
+    log("✗ 启动Ollama服务失败: " + e.message);
+    return false;
+  }
+}
+
+// 检查gemma3:12b模型
+function checkGemmaModel() {
+  try {
+    log("检查gemma3:12b模型...");
+    var modelCheck = shell.Exec("ollama list");
+    var modelOutput = modelCheck.StdOut.ReadAll();
+    
+    if (modelOutput.indexOf("gemma3:12b") !== -1) {
+      log("✓ 已找到gemma3:12b模型");
+    } else {
+      log("⚠ 未找到gemma3:12b模型。您可以运行: ollama pull gemma3:12b");
+    }
+  } catch (e) {
+    log("✗ 检查模型失败: " + e.message);
+  }
+}
+
+// 启动Ngrok
+function startNgrok() {
+  if (ngrokRunning) {
+    log("Ngrok已在运行...");
+    return;
+  }
+  
+  if (!ngrokInstalled) {
+    if (!checkNgrok()) {
+      log("请先安装Ngrok");
+      return;
+    }
+  }
+  
+  try {
+    log("正在启动Ngrok...");
+    
+    // 创建临时文件来捕获ngrok输出
+    var tempDir = shell.ExpandEnvironmentStrings("%TEMP%");
+    var ngrokOutputFile = tempDir + "\\ngrok_output.txt";
+    
+    // 启动ngrok并将输出重定向到文件
+    shell.Run('cmd /c ngrok http 11434 --log=stdout > "' + ngrokOutputFile + '"', 0, false);
+    ngrokRunning = true;
+    
+    // 定期检查ngrok输出文件以查找URL
+    log("等待Ngrok生成URL...");
+    var checkInterval = setInterval(function() {
+      try {
+        if (fso.FileExists(ngrokOutputFile)) {
+          var file = fso.OpenTextFile(ngrokOutputFile, 1, false);
+          var content = file.ReadAll();
+          file.Close();
+          
+          // 搜索 https URL
+          var match = content.match(/url=https:\/\/[a-zA-Z0-9-]+\.ngrok(-free)?\.app/);
+          if (match) {
+            var url = match[0].replace("url=", "");
+            document.getElementById("ngrokUrl").innerText = url;
+            log("✓ Ngrok隧道已创建: " + url);
+            clearInterval(checkInterval);
+          }
+        }
+      } catch (e) {
+        log("✗ 读取Ngrok输出失败: " + e.message);
+        clearInterval(checkInterval);
+      }
+    }, 1000);
+    
+    // 3分钟后停止检查，以防万一
+    setTimeout(function() {
+      clearInterval(checkInterval);
+      if (document.getElementById("ngrokUrl").innerText === "等待ngrok启动...") {
+        log("⚠ 获取Ngrok URL超时，请检查Ngrok是否正常运行");
+      }
+    }, 180000);
+  } catch (e) {
+    log("✗ 启动Ngrok失败: " + e.message);
+  }
+}
+
+// 一键启动所有服务
+document.getElementById("startAll").onclick = function() {
+  log("========= 开始一键启动流程 =========");
+  
+  // 检测组件
+  checkOllama();
+  checkNgrok();
+  
+  // 延迟启动服务，给检测留出时间
+  setTimeout(function() {
+    // 启动Ollama
+    if (ollamaInstalled) {
+      startOllama();
+      
+      // 延迟启动Ngrok，等待Ollama启动
+      setTimeout(function() {
+        if (ngrokInstalled) {
+          startNgrok();
+        } else {
+          log("请先安装Ngrok后再继续");
+        }
+      }, 5000);
+    } else {
+      log("请先安装Ollama后再继续");
+    }
+  }, 2000);
+};
+
+// 复制URL
+document.getElementById("copyUrl").onclick = function() {
+  var urlText = document.getElementById("ngrokUrl").innerText;
+  if (urlText && urlText !== "等待ngrok启动...") {
+    window.clipboardData.setData("Text", urlText);
+    alert("URL已复制到剪贴板！");
+    log("✓ URL已复制到剪贴板");
+  } else {
+    alert("没有可用的URL。请先启动Ngrok。");
+    log("✗ 没有可用的URL可复制");
+  }
+};
+
+// 测试URL
+document.getElementById("testUrl").onclick = function() {
+  var urlText = document.getElementById("ngrokUrl").innerText;
+  if (urlText && urlText !== "等待ngrok启动...") {
+    try {
+      // 测试连接
+      log("正在测试连接到 " + urlText + " ...");
+      var testResult = shell.Exec("curl -s " + urlText + "/api/tags");
+      var testOutput = testResult.StdOut.ReadAll();
+      
+      if (testOutput && testOutput.length > 0) {
+        log("✓ 连接测试成功！URL可以正常访问");
+        alert("连接测试成功！您可以使用此URL连接到远程AI聊天。");
+      } else {
+        log("✗ 连接测试失败。URL可能无法访问");
+        alert("连接测试失败。URL可能无法访问，请检查Ollama和Ngrok是否正常运行。");
+      }
+    } catch (e) {
+      log("✗ 测试连接失败: " + e.message);
+      alert("测试连接失败: " + e.message);
+    }
+  } else {
+    alert("没有可用的URL。请先启动Ngrok。");
+    log("✗ 没有可用的URL可测试");
+  }
+};
+
+// 页面加载完成后自动检测
+window.onload = function() {
+  log("工具已启动，准备就绪");
+  checkOllama();
+  checkNgrok();
+};
+</script>
+</body>
+</html> 

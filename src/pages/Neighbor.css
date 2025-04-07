@@ -1,0 +1,106 @@
+.neighbor-container {
+  padding: 16px;
+  padding-bottom: 70px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.neighbor-header {
+  margin-bottom: 16px;
+}
+
+.neighbor-header h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 24px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-icon {
+  color: #999;
+  margin-right: 8px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  --placeholder-color: #999;
+}
+
+.neighbor-list :global(.adm-list-item) {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.neighbor-info {
+  flex: 1;
+}
+
+.neighbor-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.neighbor-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.neighbor-location {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.neighbor-address {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.neighbor-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.neighbor-intro {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+:global(.adm-button) {
+  --border-radius: 16px;
+  --border-color: #e5e5e5;
+}
+
+:global(.adm-space-item) {
+  display: flex;
+  align-items: center;
+}
+
+:global(.adm-avatar) {
+  --size: 48px;
+  border: 1px solid #eee;
+} 

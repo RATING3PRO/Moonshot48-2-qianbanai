@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "user1": 6,
+    "user2": 1,
+    "status": "friends",
+    "requestTime": "2025-04-04T14:52:19.503Z",
+    "updateTime": "2025-04-05T02:24:37.252Z"
+  },
+  {
+    "id": 2,
+    "user1": 6,
+    "user2": 2,
+    "status": "requested",
+    "requestTime": "2025-04-04T15:00:27.901Z",
+    "updateTime": "2025-04-04T15:00:27.901Z"
+  },
+  {
+    "id": 3,
+    "user1": 6,
+    "user2": 3,
+    "status": "requested",
+    "requestTime": "2025-04-04T15:00:28.605Z",
+    "updateTime": "2025-04-04T15:00:28.605Z"
+  },
+  {
+    "id": 4,
+    "user1": 6,
+    "user2": 4,
+    "status": "requested",
+    "requestTime": "2025-04-04T15:00:29.086Z",
+    "updateTime": "2025-04-04T15:00:29.086Z"
+  },
+  {
+    "id": 5,
+    "user1": 6,
+    "user2": 5,
+    "status": "requested",
+    "requestTime": "2025-04-04T15:00:29.433Z",
+    "updateTime": "2025-04-04T15:00:29.433Z"
+  },
+  {
+    "id": 6,
+    "user1": 6,
+    "user2": 6,
+    "status": "requested",
+    "requestTime": "2025-04-04T15:00:29.861Z",
+    "updateTime": "2025-04-04T15:00:29.861Z"
+  }
+]
