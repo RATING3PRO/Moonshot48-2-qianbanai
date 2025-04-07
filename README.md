@@ -208,5 +208,5 @@ MIT
 
 如有问题或建议，请通过以下方式联系我们：
 - 提交 Issue
-- 发送邮件至：[您的邮箱]
-- 访问我们的网站：[网站地址]
+- 发送邮件至：xiesmail2000@gmail.com
+- 访问我们的网站:(https://github.com/xieyouming-Web/Moonshot48-2-qianbanai/edit/master/README.md)
