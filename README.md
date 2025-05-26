@@ -210,3 +210,7 @@ MIT
 - 提交 Issue
 - 发送邮件至：xiesmail2000@gmail.com
 - 访问我们的网站:(https://github.com/xieyouming-Web/Moonshot48-2-qianbanai/edit/master/README.md)
+
+## 开发团队
+
+感谢M48-S2 Group7 全体成员提供的支持以及帮助
